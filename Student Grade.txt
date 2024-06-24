@@ -1,45 +1,93 @@
-Calculate_grade(score):
-    if score >= 90:
-        return 'A'
-    elif score >= 80:
-        return 'B'
-    elif score >= 70:
-        return 'C'
-    elif score >= 60:
-        return 'D'
-    else:
-        return 'F'
+class Student:
+    def __init__(self, name):
+        self.name = name
+        self.subjects = {}
 
-def calculate_gpa(score):
-    if score >= 90:
-        return 4.0
-    elif score >= 80:
-        return 3.0
-    elif score >= 70:
-        return 2.0
-    elif score >= 60:
-        return 1.0
-    else:
-        return 0.0
-        
-def main():
-    grades = []
-    num_subjects = int(input("Enter the number of subjects: "))
-    
-    for i in range(num_subjects):
-        grade = float(input(f"Enter grade {i + 1}: "))
-        grades.append(grade)
-    if len(grades) > 0:
-        average_grade = sum(grades) / len(grades)
-        print(f"Average Grade: {average_grade:.2f}")
-        overall_grade = (average_grade / 100) * 100
-        print(f"Overall Grade: {overall_grade:.2f}%")
-        letter_grade = calculate_letter_grade(overall_grade)
-        print(f"Letter Grade: {letter_grade}")
-        gpa = calculate_gpa(overall_grade)
-        print(f"GPA: {gpa:.2f}")
-    else:
-        print("No grades entered.")
+    def add_grade(self, subject, grade):
+        if subject in self.subjects:
+            self.subjects[subject].append(grade)
+        else:
+            self.subjects[subject] = [grade]
 
+    def calculate_average_grade(self, subject):
+        if subject in self.subjects:
+            grades = self.subjects[subject]
+            if grades:
+                return sum(grades) / len(grades)
+            else:
+                return 0
+        else:
+            return 0
+
+    def calculate_overall_average(self):
+        total_sum = 0
+        total_count = 0
+        for grades in self.subjects.values():
+            total_sum += sum(grades)
+            total_count += len(grades)
+
+        if total_count > 0:
+            return total_sum / total_count
+        else:
+            return 0
+
+    def calculate_gpa(self):
+        overall_average = self.calculate_overall_average()
+        # Define GPA calculation logic based on your institution's scale
+        if overall_average >= 90:
+            return 4.0
+        elif overall_average >= 80:
+            return 3.0
+        elif overall_average >= 70:
+            return 2.0
+        elif overall_average >= 60:
+            return 1.0
+        else:
+            return 0.0
+
+    def get_letter_grade(self, subject):
+        average_grade = self.calculate_average_grade(subject)
+        if average_grade >= 90:
+            return 'A'
+        elif average_grade >= 80:
+            return 'B'
+        elif average_grade >= 70:
+            return 'C'
+        elif average_grade >= 60:
+            return 'D'
+        else:
+            return 'F'
+
+    def display_grades(self):
+        print(f"Grades for {self.name}:")
+        for subject, grades in self.subjects.items():
+            average_grade = self.calculate_average_grade(subject)
+            letter_grade = self.get_letter_grade(subject)
+            print(f"Subject: {subject} | Grades: {grades} | Average Grade: {average_grade:.2f} | Letter Grade: {letter_grade}")
+        overall_average = self.calculate_overall_average()
+        overall_gpa = self.calculate_gpa()
+        print(f"Overall Average Grade: {overall_average:.2f} | Overall GPA: {overall_gpa:.2f}")
+
+
+# Example usage:
 if __name__ == "__main__":
-    main()
+    student_name = input("Enter student's name: ")
+    student = Student(student_name)
+    
+    while True:
+        print("\n1. Add grades for a subject")
+        print("2. Display grades")
+        print("3. Exit")
+        choice = input("Enter your choice (1/2/3): ")
+        
+        if choice == '1':
+            subject = input("Enter subject name: ")
+            grade = float(input("Enter grade: "))
+            student.add_grade(subject, grade)
+        elif choice == '2':
+            student.display_grades()
+        elif choice == '3':
+            print("Exiting program.")
+            break
+        else:
+            print("Invalid choice. Please enter 1, 2, or 3.")
